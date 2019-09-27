@@ -120,10 +120,10 @@ class CrimeListFragment : Fragment() {
 
         // Ch. 9: RecyclerView ViewTypes
         override fun getItemViewType(position: Int): Int {
-            var layout = R.layout.list_item_crime_require_police
+            var layout = R.layout.list_item_crime
 
-            if (position % 2 == 0) {
-                layout = R.layout.list_item_crime
+            if (crimes[position].requiresPolice) {
+                layout = R.layout.list_item_crime_require_police
             }
 
             return layout
