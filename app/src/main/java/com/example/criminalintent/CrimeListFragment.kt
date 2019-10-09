@@ -24,10 +24,10 @@ class CrimeListFragment : Fragment() {
     private var adapter: CrimeAdapter? = null
     //private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "Total crimes: ${crimeListViewModel.crimes.size}")
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        Log.d(TAG, "Total crimes: ${crimeListViewModel.crimes.size}")
+//    }
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
         ViewModelProviders.of(this).get(CrimeListViewModel::class.java)
@@ -42,35 +42,35 @@ class CrimeListFragment : Fragment() {
         crimeRecyclerView =
             view.findViewById(R.id.crime_recycler_view) as RecyclerView
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
-        //crimeRecyclerView.adapter = adapter
+        crimeRecyclerView.adapter = adapter
 
-        updateUI()
+        //updateUI()
 
         return view
     }
 
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//        crimeListViewModel.crimeListLiveData.observe(
-//            viewLifecycleOwner,
-//            Observer { crimes ->
-//                crimes?.let {
-//                    Log.i(TAG, "Got crimes ${crimes.size}")
-//                    updateUI(crimes)
-//                }
-//            })
-//    }
-
-    private fun updateUI() {
-        val crimes = crimeListViewModel.crimes
-        adapter = CrimeAdapter(crimes)
-        crimeRecyclerView.adapter = adapter
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        crimeListViewModel.crimeListLiveData.observe(
+            viewLifecycleOwner,
+            Observer { crimes ->
+                crimes?.let {
+                    Log.i(TAG, "Got crimes ${crimes.size}")
+                    updateUI(crimes)
+                }
+            })
     }
 
-//    private fun updateUI(crimes: List<Crime>) {
+//    private fun updateUI() {
+//        val crimes = crimeListViewModel.crimes
 //        adapter = CrimeAdapter(crimes)
 //        crimeRecyclerView.adapter = adapter
 //    }
+
+    private fun updateUI(crimes: List<Crime>) {
+        adapter = CrimeAdapter(crimes)
+        crimeRecyclerView.adapter = adapter
+    }
 
     private inner class CrimeHolder(view: View) : RecyclerView.ViewHolder(view),
         View.OnClickListener {
@@ -122,9 +122,9 @@ class CrimeListFragment : Fragment() {
         override fun getItemViewType(position: Int): Int {
             var layout = R.layout.list_item_crime
 
-            if (crimes[position].requiresPolice) {
-                layout = R.layout.list_item_crime_require_police
-            }
+//            if (crimes[position].requiresPolice) {
+//                layout = R.layout.list_item_crime_require_police
+//            }
 
             return layout
         }
