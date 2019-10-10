@@ -6,14 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
@@ -74,6 +73,7 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
+        //adapter.submitList(crimes)
         adapter = CrimeAdapter(crimes)
         crimeRecyclerView.adapter = adapter
     }
@@ -94,8 +94,8 @@ class CrimeListFragment : Fragment() {
         fun bind(crime: Crime) {
             this.crime = crime
             titleTextView.text = this.crime.title
-            dateTextView.text = this.crime.date.toString()
-                //SimpleDateFormat("EEEE, d MMM, yyyy").format(this.crime.date) // Ch. 10: Formatting the Date
+            dateTextView.text = //this.crime.date.toString()
+                SimpleDateFormat("EEEE, d MMM, yyyy").format(this.crime.date) // Ch. 10: Formatting the Date
             solvedImageView.visibility = if (crime.isSolved) {
                 View.VISIBLE
             } else {
@@ -111,7 +111,7 @@ class CrimeListFragment : Fragment() {
     }
 
     private inner class CrimeAdapter(var crimes: List<Crime>)
-        : RecyclerView.Adapter<CrimeHolder>() {
+        : ListAdapter<Crime, CrimeHolder>(CrimeItemCallback()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
                 : CrimeHolder {
@@ -126,6 +126,16 @@ class CrimeListFragment : Fragment() {
         }
 
         override fun getItemCount() = crimes.size
+    }
+
+    private inner class CrimeItemCallback : DiffUtil.ItemCallback<Crime>() {
+        override fun areItemsTheSame(oldItem: Crime, newItem: Crime): Boolean {
+            return oldItem == newItem
+        }
+
+        override fun areContentsTheSame(oldItem: Crime, newItem: Crime): Boolean {
+            return oldItem.title == newItem.title && oldItem.isSolved == newItem.isSolved
+        }
     }
 
 }
