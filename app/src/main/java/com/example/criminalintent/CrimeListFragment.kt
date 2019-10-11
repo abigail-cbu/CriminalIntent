@@ -30,7 +30,7 @@ class CrimeListFragment : Fragment() {
     private var callbacks: Callbacks? = null
 
     private lateinit var crimeRecyclerView: RecyclerView
-    private var adapter: CrimeAdapter = CrimeAdapter(emptyList())
+    private var adapter: CrimeAdapter = CrimeAdapter()
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
         ViewModelProviders.of(this).get(CrimeListViewModel::class.java)
@@ -73,8 +73,7 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
-        //adapter.submitList(crimes)
-        adapter = CrimeAdapter(crimes)
+        adapter.submitList(crimes) // Ch. 12
         crimeRecyclerView.adapter = adapter
     }
 
@@ -110,7 +109,7 @@ class CrimeListFragment : Fragment() {
         }
     }
 
-    private inner class CrimeAdapter(var crimes: List<Crime>)
+    private inner class CrimeAdapter()
         : ListAdapter<Crime, CrimeHolder>(CrimeItemCallback()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
@@ -121,13 +120,14 @@ class CrimeListFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
-            val crime = crimes[position]
-            holder.bind(crime)
+            //val crime = crimes[position]
+            holder.bind(getItem(position))
         }
 
-        override fun getItemCount() = crimes.size
+        //override fun getItemCount() = crimes.size
     }
 
+    // Ch. 12
     private inner class CrimeItemCallback : DiffUtil.ItemCallback<Crime>() {
         override fun areItemsTheSame(oldItem: Crime, newItem: Crime): Boolean {
             return oldItem == newItem
