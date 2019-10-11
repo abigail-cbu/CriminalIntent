@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,7 +28,9 @@ class CrimeListFragment : Fragment() {
     }
     private var callbacks: Callbacks? = null
 
-    private lateinit var crimeRecyclerView: RecyclerView
+    private lateinit var crimeRecyclerView : RecyclerView
+    private lateinit var crimeEmptyText : TextView
+    private lateinit var crimeEmptyCreateNew : Button
     private var adapter: CrimeAdapter = CrimeAdapter()
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
@@ -52,6 +55,8 @@ class CrimeListFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
         crimeRecyclerView =
             view.findViewById(R.id.crime_recycler_view) as RecyclerView
+        crimeEmptyText = view.findViewById(R.id.empty_text_view) as TextView
+        crimeEmptyCreateNew = view.findViewById(R.id.empty_create_new_button) as Button
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
         crimeRecyclerView.adapter = adapter
 
@@ -65,9 +70,22 @@ class CrimeListFragment : Fragment() {
             Observer { crimes ->
                 crimes?.let {
                     Log.i(TAG, "Got crimes ${crimes.size}")
+                    if (crimes.isEmpty()) {
+                        crimeRecyclerView.visibility = View.GONE
+                    }
+                    else {
+                        crimeRecyclerView.visibility = View.VISIBLE
+                    }
                     updateUI(crimes)
                 }
             })
+
+        crimeEmptyCreateNew.setOnClickListener { view ->
+            val crime = Crime()
+            crimeListViewModel.addCrime(crime)
+            callbacks?.onCrimeSelected(crime.id)
+            true
+        }
     }
 
     override fun onDetach() {

@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView
+
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/crime_recycler_view"/>
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/crime_recycler_view">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/empty_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No Crimes Found" />
+
+    <Button
+        android:id="@+id/empty_create_new_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/new_crime" />
+
+</LinearLayout>
+
