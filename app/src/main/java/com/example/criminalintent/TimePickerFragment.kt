@@ -17,20 +17,21 @@ class TimePickerFragment : DialogFragment() {
         fun onTimeSelected(date: Date)
     }
 
+    // Ch. 13
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val timeListener = TimePickerDialog.OnTimeSetListener { _: TimePicker, hourOfDay, minute ->
-            val resultDate : Date = GregorianCalendar(0, 0, 0, hourOfDay, minute).time
-
-            targetFragment?.let { fragment ->
-                (fragment as Callbacks).onTimeSelected(resultDate)
-            }
-        }
-
         val date = arguments?.getSerializable(ARG_TIME) as Date
         val calendar = Calendar.getInstance()
         calendar.time = date
         val initialHour = calendar.get(Calendar.HOUR_OF_DAY)
         val initialMin = calendar.get(Calendar.MINUTE)
+
+        val timeListener = TimePickerDialog.OnTimeSetListener { _: TimePicker, hourOfDay, minute ->
+            val resultDate : Date = GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hourOfDay, minute).time
+
+            targetFragment?.let { fragment ->
+                (fragment as Callbacks).onTimeSelected(resultDate)
+            }
+        }
 
         return TimePickerDialog(
             requireContext(),

@@ -4,4 +4,5 @@
     <string name="crime_details_label">Details</string>
     <string name="crime_solved_label">Solved</string>
     <string name="crime_call_police_label">Contact Police</string>
+    <string name="new_crime">New Crime</string>
 </resources>
