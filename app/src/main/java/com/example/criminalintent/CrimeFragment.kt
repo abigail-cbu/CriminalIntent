@@ -235,7 +235,8 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
 
     private fun updateUI() {
         titleField.setText(crime.title)
-        dateButton.text = SimpleDateFormat("EEEE, d MMM, yyyy").format(this.crime.date) //crime.date.toString()
+        // ch. 17
+        dateButton.text = java.text.DateFormat.getDateInstance().format(crime.date) //SimpleDateFormat("EEEE, d MMM, yyyy").format(this.crime.date) //crime.date.toString()
         timeButton.text = SimpleDateFormat("HH:mm").format(this.crime.date) // Ch. 13
         solvedCheckBox. apply {
             isChecked = crime.isSolved
@@ -258,6 +259,15 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
             photoView.contentDescription =
                 getString(R.string.crime_photo_no_image_description)
         }
+
+        // ch. 18: announcing events
+        photoView.postDelayed(Runnable {
+            if (photoFile.exists()) {
+                photoView.announceForAccessibility("Photo has been added")
+            } else {
+                photoView.announceForAccessibility("Photo has not been added")
+            }
+        }, 2000)
     }
 
 

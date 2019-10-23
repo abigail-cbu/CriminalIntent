@@ -138,6 +138,11 @@ class CrimeListFragment : Fragment() {
             } else {
                 View.GONE
             }
+
+            // Ch. 18: Improving the List
+            if (crime.isSolved) {
+                solvedImageView.contentDescription = getString(R.string.crime_report_solved)
+            }
         }
 
         override fun onClick(v: View) {
