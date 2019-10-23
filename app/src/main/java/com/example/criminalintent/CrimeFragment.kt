@@ -384,7 +384,11 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
             requestCode == REQUEST_PHOTO -> {
                 requireActivity().revokeUriPermission(photoUri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                updatePhotoView()
+
+                // ch. 16: Efficient Thumbnail Load 
+               photoView.viewTreeObserver.addOnGlobalLayoutListener {
+                   updatePhotoView()
+               }
             }
         }
     }
