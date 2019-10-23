@@ -2,6 +2,9 @@ package com.example.criminalintent
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -17,9 +20,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import java.io.File
@@ -31,6 +37,7 @@ private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
 private const val DIALOG_DATE = "DialogDate"
 private const val DIALOG_TIME = "DialogTime"
+private const val DIALOG_PHOTO = "DialogPhoto"
 private const val REQUEST_DATE = 0
 private const val REQUEST_CONTACT = 1
 private const val DATE_FORMAT = "EEE, MMM, dd"
@@ -183,6 +190,56 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
         // ch. 15
         callSuspectButton.apply {
             // do something to get contacts
+//            if (suspectButton.text.equals("Choose Suspect")) {
+//                Log.d(TAG, suspectButton.text.toString())
+//                isEnabled = false
+//            }
+
+            setOnClickListener {
+                val contactPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS)
+
+                if (contactPermission != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(requireActivity(),
+                        arrayOf(Manifest.permission.READ_CONTACTS),
+                        2000)
+                } else {
+
+                    var cr = requireActivity().contentResolver
+                    var cursor = cr.query(
+                        ContactsContract.Contacts.CONTENT_URI, null,
+                        "DISPLAY_NAME = '" + suspectButton.text + "'", null, null
+                    )
+
+                    var number = ""
+                    if (cursor!!.moveToFirst()) {
+                        var contactId =
+                            cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID))
+
+                        var phones = cr.query(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Photo.CONTACT_ID + " = " + contactId,
+                            null,
+                            null
+                        )
+
+                        while (phones!!.moveToNext()) {
+                            number =
+                                phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
+                            break
+                        }
+
+                        phones.close()
+                    }
+                    cursor.close()
+
+                    var numberUri = Uri.parse("tel:" + number)
+                    var dialIntent = Intent(Intent.ACTION_DIAL)
+                    dialIntent.setData(numberUri)
+                    startActivity(dialIntent)
+                }
+            }
         }
 
         photoButton.apply {
@@ -208,6 +265,30 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
 
                 startActivityForResult(captureImage, REQUEST_PHOTO)
             }
+        }
+
+//        // ch. 16: detail display
+//        photoView.setOnClickListener {
+//            Log.d(TAG, "photo was clicked")
+//            val bitmap = getScaledBitmap(photoFile.path, requireActivity())
+//            PhotoFragment.newInstance(bitmap).apply {
+//                setTargetFragment(this@CrimeFragment, REQUEST_PHOTO)
+//                show(this@CrimeFragment.requireFragmentManager(), DIALOG_PHOTO)
+//            }
+//        }
+
+        // ch. 16: detail display (2nd try)
+        photoView.setOnClickListener {
+            val photoView = ImageView(requireContext())
+            photoView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
+            photoView.setImageBitmap(getScaledBitmap(photoFile.path, requireActivity()))
+
+            AlertDialog.Builder(requireActivity())
+                .setCancelable(false)
+                .setNegativeButton("Close", DialogInterface.OnClickListener { dialog, which ->
+                    // close
+                }).setView(photoView).create().show()
+
         }
 
     }
@@ -269,7 +350,6 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
             }
         }, 2000)
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when {
